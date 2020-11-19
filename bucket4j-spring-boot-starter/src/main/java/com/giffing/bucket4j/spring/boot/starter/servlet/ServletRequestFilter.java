@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.giffing.bucket4j.spring.boot.starter.exception.RateLimitedException;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -68,10 +69,16 @@ public class ServletRequestFilter extends OncePerRequestFilter implements Ordere
 	}
 
 	private void handleHttpResponseOnRateLimiting(HttpServletResponse httpResponse, ConsumptionProbe probe) throws IOException {
-		httpResponse.setStatus(429);
+		httpResponse.setStatus(filterConfig.getResponseCode());
 		httpResponse.setHeader("X-Rate-Limit-Retry-After-Seconds", "" + TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill()));
-		httpResponse.setContentType("application/json");
-		httpResponse.getWriter().append(filterConfig.getHttpResponseBody());
+		switch (filterConfig.getOperation()){
+			case RETURN:
+				httpResponse.setContentType("application/json");
+				httpResponse.getWriter().append(filterConfig.getHttpResponseBody());
+				break;
+			case THROW:
+				throw new RateLimitedException(probe.getNanosToWaitForRefill());
+		}
 	}
 
 	private long getRemainingLimit(Long remaining, ConsumptionProbe probe) {

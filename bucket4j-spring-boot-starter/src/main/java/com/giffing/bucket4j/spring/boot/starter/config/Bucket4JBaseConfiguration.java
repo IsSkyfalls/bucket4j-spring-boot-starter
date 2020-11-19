@@ -75,6 +75,8 @@ public abstract class Bucket4JBaseConfiguration<R> {
 		filterConfig.setStrategy(config.getStrategy());
 		filterConfig.setHttpResponseBody(config.getHttpResponseBody());
 		filterConfig.setMetrics(config.getMetrics());
+		filterConfig.setOperation(config.getOperation());
+		filterConfig.setResponseCode(config.getResponseCode());
 		
 		throwExceptionOnInvalidFilterUrl(filterConfig);
 		

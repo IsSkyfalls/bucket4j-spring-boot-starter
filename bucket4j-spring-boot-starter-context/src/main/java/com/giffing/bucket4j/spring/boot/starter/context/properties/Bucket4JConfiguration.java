@@ -3,6 +3,7 @@ package com.giffing.bucket4j.spring.boot.starter.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.giffing.bucket4j.spring.boot.starter.context.RateLimitedOperation;
 import org.springframework.core.Ordered;
 
 import com.giffing.bucket4j.spring.boot.starter.context.FilterMethod;
@@ -39,12 +40,31 @@ public class Bucket4JConfiguration {
 	private List<RateLimit> rateLimits = new ArrayList<>();
 	
 	private Metrics metrics = new Metrics();
-	
+
 	/**
-	 * The HTTP content which should be used in case of rate limiting
+	 * The HTTP response body which should be returned when limiting the rate.
 	 */
-	private String httpResponseBody = "{ \"message\": \"Too many requests!\" }";
-	
+	private String httpResponseBody = "";
+
+	private int responseCode = 429;
+
+	private RateLimitedOperation operation = RateLimitedOperation.RETURN;
+
+	public int getResponseCode(){
+		return responseCode;
+	}
+
+	public void setResponseCode(int responseCode){
+		this.responseCode = responseCode;
+	}
+
+	public RateLimitedOperation getOperation(){
+		return operation;
+	}
+
+	public void setOperation(RateLimitedOperation operation){
+		this.operation = operation;
+	}
 	
 	public Bucket4JConfiguration() {
 	}
